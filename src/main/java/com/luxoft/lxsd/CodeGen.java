@@ -111,11 +111,11 @@ public class CodeGen {
                 XmlSchemaElement el = (XmlSchemaElement)xso;
                 required = (el.getMinOccurs() != 0);
             }
-        }
-        if (ret.type() instanceof JDefinedClass) {
-            XmlElementWriter w = ret.annotate2(XmlElementWriter.class).name(field.getOrigName()).required(required);
-        } else {
-            XmlAttributeWriter w = ret.annotate2(XmlAttributeWriter.class).name(field.getOrigName()).required(required);
+            if (ret.type() instanceof JDefinedClass) {
+                XmlElementWriter w = ret.annotate2(XmlElementWriter.class).name(field.getOrigName()).required(required);
+            } else {
+                XmlAttributeWriter w = ret.annotate2(XmlAttributeWriter.class).name(field.getOrigName()).required(required);
+            }
         }
         if (fieldVar.type() instanceof JDefinedClass) {
             JType type = getTargetClass(toClass, (JDefinedClass)fieldVar.type());
@@ -135,7 +135,8 @@ public class CodeGen {
                         else {
                             targetParams.add(sourceClass);
                         }
-                    }
+                    } else 
+                        targetParams.add(sourceClass);
                 }
                 JType erasure = type.erasure();
                 try {
