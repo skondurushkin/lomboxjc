@@ -3,17 +3,10 @@ package com.luxoft.lxsd;
 import com.luxoft.lxsd.XSDSchema.XsdField;
 import com.luxoft.lxsd.XSDSchema.XsdNode;
 import com.luxoft.lxsd.XSDSchema.XsdType;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -82,7 +75,6 @@ public class ExtractionVisitor implements XSDSchema.XsdVisitor {
 
     @Override
     public void visit(XsdType t) {
-        // System.out.println("visit type " + t.getFullName());
         try {
             writeln("# TYPE");
             writeOriginalName(t.getOrigName());

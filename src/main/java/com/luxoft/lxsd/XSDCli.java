@@ -14,7 +14,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-//import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -22,18 +21,10 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-//import org.springframework.boot.CommandLineRunner;
-//import org.springframework.boot.SpringApplication;
-//import org.springframework.boot.autoconfigure.SpringBootApplication;
-//import org.springframework.context.annotation.Configuration;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 
-//@Slf4j
-//@SpringBootApplication
-//@Configuration
-public class XSDCli  // implements CommandLineRunner 
-{
+public class XSDCli {
     
 
     final CommandLineParser parser = new DefaultParser();
@@ -216,102 +207,11 @@ public class XSDCli  // implements CommandLineRunner
     }
 
 
-    static final String charEscape = "\b\t\n\f\r\"\'\\";
-    static final String charMacro  = "btnfr\"'\\";
-    public static String quotifyNoEscape(char quote, String s) {
-        int n = s.length();
-        StringBuilder sb = new StringBuilder(n + 2);
-        sb.append(quote);
-        for (int i = 0; i < n; i++) {
-            char c = s.charAt(i);
-            int j = charEscape.indexOf(c);
-            if(j>=0) {
-                if((quote=='"' && c=='\'') || (quote=='\'' && c=='"')) {
-                    sb.append(c);
-                } else {
-                    sb.append('\\');
-                    sb.append(charMacro.charAt(j));
-                }
-            } else {
-                // this overrides the original code in 
-                // public static com.sun.codemodel.JExpr.quotify(char, String)
-                // to suppress unicode escaping as we generate UTF-8 encoded files
-                sb.append(c);
-                // the following comment contains original code
-//                // technically Unicode escape shouldn't be done here,
-//                // for it's a lexical level handling.
-//                // 
-//                // However, various tools are so broken around this area,
-//                // so just to be on the safe side, it's better to do
-//                // the escaping here (regardless of the actual file encoding)
-//                //
-//                // see bug 
-//                if( c<0x20 || 0x7E<c ) {
-//                    // not printable. use Unicode escape
-//                    sb.append("\\u");
-//                    String hex = Integer.toHexString(((int)c)&0xFFFF);
-//                    for( int k=hex.length(); k<4; k++ )
-//                        sb.append('0');
-//                    sb.append(hex);
-//                } else {
-//                    sb.append(c);
-//                }
-            }
-        }
-        sb.append(quote);
-        return sb.toString();
-    }
-/*    
-    static final MethodType mtQuotify = MethodType.methodType(String.class, char.class, String.class);
-    static final MethodHandles.Lookup lookup = MethodHandles.lookup();
-    static MethodHandle mh;
-    static URLClassLoader ucl;
-    static Class<?> jexprClass;
-    static {
-        
-        try {
-            ucl = new URLClassLoader(new URL[]{
-                new URL("file:/./com/sun/codemodel")
-            }) {
-                @Override
-                protected Class<?> findClass(final String name) throws ClassNotFoundException {
-                    Class<?> clazz = super.findClass(name);
-                    Class<?> ret = (Class<?>)Proxy.newProxyInstance(this, new Class[] {clazz}, new InvocationHandler() {
-                        @Override
-                        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                            if (method.getName().equals("quotify")) {
-                                return quotifyNoEscape((char)args[0], (String)args[1]);
-                            }
-                            return method.invoke(proxy, args);
-                        }
-                    });
-                    return ret;
-                }
-            };
-            log.info("Class JExpr {} FOUND", (ucl == null ? "*NOT*" : ""));
-            jexprClass = ucl.loadClass("com.sun.codemodel.JExpr");
-            log.info("Class JExpr {} LOADED", (jexprClass == null ? "*NOT*" : ""));
-            
-        } catch (MalformedURLException ex1) {
-            log.info("Method FOUND: public static String com.sun.codemodel.JExpr.quotify(char, String)");
-        } catch (ClassNotFoundException ex2) {
-            log.info("JExpr.class: ", ex2);
-        }
-        try {
-            mh = lookup.findStatic(com.sun.codemodel.JExpr.class, "quotify", mtQuotify);
-            log.info("Method FOUND: public static String com.sun.codemodel.JExpr.quotify(char, String)");
-        } catch (NoSuchMethodException | IllegalAccessException ex) {
-            log.info("Method not found: public static String com.sun.codemodel.JExpr.quotify(char, String)");
-        }
-    }
-*/
     public static void main(String[] args) throws Exception {
-        //SpringApplication.run(XSDCli.class, args);
         new XSDCli().run(args);
     }
 
     public void run(String... args) throws Exception {
-        System.setProperty("file.encoding", "utf-8");
         try {
             go(args);
         } catch (ParseException ex) {
@@ -321,6 +221,5 @@ public class XSDCli  // implements CommandLineRunner
             System.err.println("Exception: " + t.getMessage());
             throw t;
         }
-        return;
     }
 }
