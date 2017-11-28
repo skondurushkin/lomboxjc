@@ -25,6 +25,7 @@ import org.apache.ws.commons.schema.XmlSchemaAll;
 import org.apache.ws.commons.schema.XmlSchemaAnnotated;
 import org.apache.ws.commons.schema.XmlSchemaAnnotation;
 import org.apache.ws.commons.schema.XmlSchemaAnnotationItem;
+import org.apache.ws.commons.schema.XmlSchemaAny;
 import org.apache.ws.commons.schema.XmlSchemaAttribute;
 import org.apache.ws.commons.schema.XmlSchemaAttributeOrGroupRef;
 import org.apache.ws.commons.schema.XmlSchemaChoice;
@@ -148,8 +149,10 @@ public class XSDSchema {
             this.node = node;
             if (node instanceof XmlSchemaNamed) {
                 this.origName = ((XmlSchemaNamed) node).getName();
-                setName(this.origName);
+            } else if (node instanceof XmlSchemaAny) {
+                this.origName = "any";
             }
+            setName(this.origName);
             getSchema().register(this);
         }
 
@@ -259,12 +262,15 @@ public class XSDSchema {
             if (parent instanceof XsdType) {
                 ((XsdType)parent).addField(this);
             }
-            if (node instanceof XmlSchemaAttribute) {
-                buildDoc(((XmlSchemaAttribute) node).getAnnotation());
-            } else if (node instanceof XmlSchemaElement) {
-                buildDoc(((XmlSchemaElement) node).getAnnotation());
-                
+            if (node instanceof XmlSchemaAnnotated) {
+                buildDoc(((XmlSchemaAnnotated) node).getAnnotation());
             }
+//            if (node instanceof XmlSchemaAttribute) {
+//                buildDoc(((XmlSchemaAttribute) node).getAnnotation());
+//            } else if (node instanceof XmlSchemaElement) {
+//                buildDoc(((XmlSchemaElement) node).getAnnotation());
+//                
+//            }
         }
 
         @Override
@@ -365,13 +371,17 @@ public class XSDSchema {
                 if (innerType instanceof XmlSchemaComplexType) {
                     XsdType anonType = new XsdType(element, this);
                     XsdField f = new XsdField(element, this, anonType);
+                } else if (innerType instanceof XmlSchemaSimpleType) {
+                    XsdField f = new XsdField(element, this, null/*getAttrType()*/);
                 }
             } else {
                 XsdField f = new XsdField(element, this, null/*getAttrType()*/);
             }
             
         }
-        
+        void    resolveAny(XmlSchemaAny any) {
+            XsdField f = new XsdField(any, this, null/*getAttrType()*/);
+        }
         void    resolveParticle(XmlSchemaParticle particle) {
             if (particle == null)
                 return;
@@ -382,6 +392,8 @@ public class XSDSchema {
                 resolveParticleItems(((XmlSchemaChoice) particle).getItems());
             } else if (particle instanceof XmlSchemaAll) {
                 resolveParticleItems(((XmlSchemaAll) particle).getItems());
+            } else if (particle instanceof XmlSchemaAny) {
+                resolveAny((XmlSchemaAny)particle);
             }
             
         }
@@ -451,7 +463,8 @@ public class XSDSchema {
         void addField(XsdField field) {
             this.fields.add(field);
             if (ordered) {
-                if (field.getSchemaObject() instanceof XmlSchemaElement) {
+                if (field.getSchemaObject() instanceof XmlSchemaElement
+                    || field.getSchemaObject() instanceof XmlSchemaAny) {
                     this.propOrder.add(field); 
                }
             }

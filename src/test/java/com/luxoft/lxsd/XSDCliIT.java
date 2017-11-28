@@ -38,7 +38,8 @@ public class XSDCliIT {
     @Test
     public void testMain() {
         System.out.println("main");
-        String[] args = {"-m", "generate", "-o", "c:/temp", "-f", "c:/temp/ndfl3.xlat", "-p", "com.luxoft.fns.taps.dispatcher.gp3.ndfl3.y2014", "c:/temp/ndfl3.xsd"};
+        //String[] args = {"-m", "generate", "-o", "c:/temp", "-f", "c:/temp/ndfl3.xlat", "-p", "com.luxoft.fns.taps.dispatcher.gp3.ndfl3.y2014", "c:/temp/ndfl3.xsd"};
+        String[] args = {"-m", "generate", "-o", "c:/tools", "-f", "c:/tools/error.xlat", "-p", "com.luxoft.fns.taps.dispatcher.gp3.ndfl3.y2014", "c:/tools/error.xsd"};
         try {
             XSDCli.main(args);
             //new XSDCli().go(args);

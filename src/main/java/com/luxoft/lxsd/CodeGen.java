@@ -15,6 +15,7 @@ import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JPackage;
 import com.sun.codemodel.JType;
 import com.sun.tools.xjc.generator.annotation.spec.XmlAccessorTypeWriter;
+import com.sun.tools.xjc.generator.annotation.spec.XmlAnyElementWriter;
 import com.sun.tools.xjc.generator.annotation.spec.XmlAttributeWriter;
 import com.sun.tools.xjc.generator.annotation.spec.XmlElementWriter;
 import com.sun.tools.xjc.generator.annotation.spec.XmlRegistryWriter;
@@ -33,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.apache.ws.commons.schema.XmlSchemaAny;
 import org.apache.ws.commons.schema.XmlSchemaAttribute;
 import org.apache.ws.commons.schema.XmlSchemaElement;
 import org.apache.ws.commons.schema.XmlSchemaObject;
@@ -114,7 +116,11 @@ public class CodeGen {
             if (ret.type() instanceof JDefinedClass) {
                 XmlElementWriter w = ret.annotate2(XmlElementWriter.class).name(field.getOrigName()).required(required);
             } else {
-                XmlAttributeWriter w = ret.annotate2(XmlAttributeWriter.class).name(field.getOrigName()).required(required);
+                if (field.getSchemaObject() instanceof XmlSchemaAny) {
+                    XmlAnyElementWriter w = ret.annotate2(XmlAnyElementWriter.class);
+                } else {
+                    XmlAttributeWriter w = ret.annotate2(XmlAttributeWriter.class).name(field.getOrigName()).required(required);
+                }
             }
         }
         if (fieldVar.type() instanceof JDefinedClass) {
